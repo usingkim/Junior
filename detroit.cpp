@@ -15,7 +15,7 @@ void previousMatrix(int& m, int& n);
 
 void fillIn(int m, int n); // tmpMatrix 채워넣는 함수
 
-int isValid(int r, int c, int data); 
+int isValid(int r, int c, int data);
 // 해당 칸에 해당 숫자를 넣을려고 할 때, 유효한지 (가로세로로 겹치는 숫자가 없는지 판별)
 int isExist0(); // 다 채워졌는지 검사
 int initValid(); // fillIn함수 호출 이전에 입력 받은거 유효한거 없는지 검사
@@ -54,7 +54,7 @@ void toFillOrder() {
 		if (!cases) order.push_back(i);
 	}
 
-	delete(filledRow);
+	delete[] filledRow;
 }
 void input() {
 	ifstream in("detroit.inp");
@@ -76,12 +76,17 @@ void input() {
 			if (matrix[i][j] != 0) filledRow[i]++;
 		}
 	}
+	in.close();
 }
 void output() {
 	ofstream out("detroit.out");
 	out << numberOfDetriot << endl;
-	delete(matrix);
-	delete(tmpMatrix);
+
+	for (int i = 0; i < matrixSize; i++) {
+		delete matrix[i];
+		delete tmpMatrix[i];
+	}
+	out.close();
 }
 void nextMatrix(int& m, int& n) {
 	do {
@@ -147,17 +152,17 @@ void fillIn(int m, int n) {
 			tmpMatrix[m][n] = i;
 			nextMatrix(m, n);
 			if (m == matrixSize) return;
-			fillIn(m, n);
-			if (m < matrixSize) {
-				if (isExist0() && matrix[m][n] == 0) {
-					numberOfDetriot++;
+			if (!(nowIndex == matrixSize && n == matrixSize)) fillIn(m, n);
+				if (m < matrixSize) {
+					if (isExist0() && matrix[m][n] == 0) {
+						numberOfDetriot++;
+					}
+					tmpMatrix[m][n] = matrix[m][n];
 				}
-				tmpMatrix[m][n] = matrix[m][n];
-			}
 			if (m < matrixSize - 1 && n < matrixSize - 1 && matrix[m][n] != 0) {
 				nextMatrix(m, n);
-				tmpMatrix[m][n] = matrix[m][n];
-				previousMatrix(m, n);
+					tmpMatrix[m][n] = matrix[m][n];
+					previousMatrix(m, n);
 			}
 			previousMatrix(m, n);
 		}
