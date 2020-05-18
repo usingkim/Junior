@@ -11,7 +11,7 @@ typedef struct info {
 }info;
 
 //ifstream in("drone.inp");
-ifstream in("3.inp");
+ifstream in("1.inp");
 ofstream out("drone.out");
 
 class drone {
@@ -99,31 +99,32 @@ int drone::isValid(info &o) {
 	}
 	return 1;
 }
-
 int drone::bound() { // bound() 해야하면 1 아니면 0
 	int c = calculate();
-	int result1, result2;
 	if (c >= min) return 1;
 
-	int xx = arr[0].x, yy = arr[0].y;
+	int result, xx = arr[0].x, yy = arr[0].y, s = 0;
 
 	for (int i = 0; i < n; i++) {
 		if (arr[i].h == 0) break;
 		xx = arr[i].x;
 		yy = arr[i].y;
+		s += arr[i].w;
 	}
 
-	for (int i = 0; i < n; i++) {
+	for (int i = n-1; i >0; i--) {
 		if (isValid(d[i])) {
-			result1 = (abs(d[i].x - xx) + abs(d[i].y - yy))*(len.top() + 1);
-			result2 = (abs(d[i].x - arr[0].x) + abs(d[i].y - arr[0].y));
-			if (c + result1 + result2 > min) return 1;
+			result = (abs(d[i].x - xx) + abs(d[i].y - yy)) * (s + 1);
+			if (n >= 10) {
+				int result2 = abs(d[i].x - arr[0].x) + abs(d[i].y - arr[0].y);
+				if (c + result + result2 < min) return 0;
+			}
+			if (c + result < min) return 0;
 		}
 	}
 
 	return 0;
 }
-
 int drone::calculate() {
 
 	len.push(arr[0].w);
@@ -135,26 +136,22 @@ int drone::calculate() {
 	for (int i = 1; i <= n; i++) {
 		if (i != n && arr[i].h == 0) break;
 
-		int tmp, tmp2;
-
-		tmp2 = (len.top() + 1);
-
+		int tmp;
 		if (i == n) tmp = 0;
 		else tmp = i;
 
-		sum += (abs(arr[tmp].x - arr[i - 1].x) + abs(arr[tmp].y - arr[i - 1].y)) * tmp2;
+		sum += (abs(arr[tmp].x - arr[i - 1].x) + abs(arr[tmp].y - arr[i - 1].y)) * (len.top() + 1);
 		len.pop();
 	}
 	return sum;
 }
-
 void drone::findEnerge(int t) {
 	if (t >= n) return;
 	for (int i = 0; i < n; i++) {
 		if (isValid(d[i])) {
 			arr[t] = d[i];
 
-			if (!bound()) {
+			if (n<=6 || !bound()) {
 				findEnerge(t + 1);
 			}
 			else {
