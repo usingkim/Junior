@@ -44,7 +44,7 @@ diet::diet() {
 
 	minValue = 20000;
 	minimum[30] = { 0, };
-	sort(value, value + numOfFood + 1, sorting);
+	sort(value + 1, value + numOfFood + 1, sorting);
 
 	in.close();
 }
