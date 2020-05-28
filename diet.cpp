@@ -1,7 +1,3 @@
-// 05-28 12:36 진행 상황
-// 대부분의 조건은 만족했으나, index의 사전식 순서가 빠른 경우를 대처하지 못함.
-
-
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -31,7 +27,6 @@ public:
 
 diet::diet() {
 	ifstream in("diet.inp");
-	//ifstream in("3.inp");
 
 	in >> numOfFood;
 	in >> atLeast.protein >> atLeast.fat >> atLeast.carbohydrate >> atLeast.vitamin;
@@ -50,19 +45,20 @@ diet::diet() {
 }
 int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost) {
 
+	cost += value[index].price;
+
+	if (cost > minValue) {
+		return 20000;
+	}
+
 	result.push(value[index]);
 
 	mp += value[index].protein;
 	mf += value[index].fat;
 	ms += value[index].carbohydrate;
 	mv += value[index].vitamin;
-	cost += value[index].price;
-
-	if (cost > minValue) {
-		result.pop();
-		return 20000;
-	}
 	
+
 	if (mp >= atLeast.protein && mf >= atLeast.fat && ms >= atLeast.carbohydrate && mv >= atLeast.vitamin) {
 		if (cost == minValue) {
 			int n = 0;
@@ -75,7 +71,7 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost) {
 				return 20000;
 			}
 		}
-		
+
 		stack<Food> tmp;
 		int i = 0;
 		while (!result.empty()) {
@@ -118,10 +114,9 @@ void diet::out() {
 
 	for (int i = 0; i < numOfFood; i++) {
 		if (minimum[i] == 0) break;
-		out << minimum[i] << " ";
+		if (i != numOfFood - 1) out << minimum[i] << " ";
 	}
 	out << endl;
-
 }
 
 
