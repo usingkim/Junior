@@ -70,7 +70,7 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost) {
 				if (minimum[i] == 0) break;
 				n += (value[minimum[i]].protein + value[minimum[i]].fat + value[minimum[i]].carbohydrate + value[minimum[i]].vitamin);
 			}
-			if (n > mp + mf + ms + mv) {
+			if (n >= mp + mf + ms + mv) {
 				result.pop();
 				return 20000;
 			}
