@@ -1,6 +1,7 @@
 // 05-28 12:36 진행 상황
 // 대부분의 조건은 만족했으나, index의 사전식 순서가 빠른 경우를 대처하지 못함.
 
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
