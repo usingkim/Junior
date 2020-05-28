@@ -119,7 +119,7 @@ void diet::out() {
 
 	for (int i = 0; i < numOfFood; i++) {
 		if (minimum[i] == 0) break;
-		if (i != numOfFood - 1) out << minimum[i] << " ";
+		out << minimum[i] << " ";
 	}
 	out << endl;
 }
