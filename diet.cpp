@@ -102,6 +102,11 @@ void diet::out() {
 	ofstream out("diet.out");
 
 	for (int i = 1; i <= numOfFood; i++) {
+		int sum = 0;
+		for (int j = i; j <= numOfFood; j++) {
+			sum += value[j].vitamin;
+		}
+		if (sum < atLeast.vitamin) continue;
 		findMinCost(i, 0, 0, 0, 0, 0);
 	}
 
