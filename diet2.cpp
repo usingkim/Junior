@@ -18,10 +18,6 @@ bool sortingI(const Food& a, const Food& b) { // index번호 기준
 	return a.index < b.index;
 }
 
-bool sortingI(const Food& a, const Food& b) { // index번호 기준
-	return a.index < b.index;
-}
-
 class diet {
 	int numOfFood, minValue, finalV;
 	Food atLeast, value[31], minimum[31];
@@ -100,11 +96,7 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int c
 				return 20000;
 			}
 			else if (n == mp + mf + ms + mv) {
-<<<<<<< HEAD
 				// 만약에 이전 값들의 index 번호가 사전순으로 더 앞이라면 return 해줘야함
-=======
-				// 만약에 이전 친구들이 index 번호가 사전순으로 더 앞이라면 return 해줘야함
->>>>>>> d0eafb42f782b9829641f046df03d5828c672ac9
 				int idxTmp[31], s = 0;
 				for (int i = 1; i <= numOfFood; i++) {
 					idxTmp[i] = tmpResult[i].index;
@@ -128,18 +120,8 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int c
 
 		for (int idx = 1; idx <= count; idx++) {
 			minimum[idx] = tmpResult[idx];
-<<<<<<< HEAD
 		}
 		if (count + 1 <= numOfFood) minimum[count + 1] = { 0,0,0,0,0,0 };
-=======
-		}
-		if (count + 1 <= numOfFood) minimum[count + 1] = { 0,0,0,0,0,0 };
-
-		for (int i = 1; i <= count; i++) {
-			cout << minimum[i].index << " ";
-		}
-		cout << endl;
->>>>>>> d0eafb42f782b9829641f046df03d5828c672ac9
 
 		sort(minimum, minimum + count + 1, sortingI);
 		finalV = count;
@@ -167,11 +149,7 @@ bool diet::isExist0() {
 					break;
 				}
 			}
-<<<<<<< HEAD
 			if (save == 0 && (value[i].protein || value[i].fat || value[i].carbohydrate || value[i].vitamin)) {
-=======
-			if (save == 0) {
->>>>>>> d0eafb42f782b9829641f046df03d5828c672ac9
 				minimum[++finalV] = value[i];
 				if (finalV <= 30)	minimum[finalV + 1] = { 0,0,0,0,0,0 };
 				e = true;
@@ -184,7 +162,6 @@ void diet::out() {
 	ofstream out("diet.out");
 
 	for (int i = 1; i <= numOfFood; i++) {
-<<<<<<< HEAD
 		Food sum = { 0,0,0,0,0,0 };
 		for (int j = i; j <= numOfFood; j++) {
 			sum.vitamin += value[j].vitamin;
@@ -197,13 +174,6 @@ void diet::out() {
 		if (sum.protein < atLeast.protein) continue;
 		if (sum.fat < atLeast.fat) continue;
 		if (sum.carbohydrate < atLeast.carbohydrate) continue;
-=======
-		int sum = 0;
-		for (int j = i; j <= numOfFood; j++) {
-			sum += value[j].vitamin;
-		}
-		if (sum < atLeast.vitamin) continue;
->>>>>>> d0eafb42f782b9829641f046df03d5828c672ac9
 		
 		findMinCost(i, 0, 0, 0, 0, 0, 0);
 	}
