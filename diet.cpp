@@ -20,18 +20,19 @@ bool sortingI(const Food& a, const Food& b) { // index번호 기준
 }
 
 class diet {
-	int numOfFood, minValue;
+	int numOfFood, minValue, finalV;
 	Food atLeast, value[31], minimum[31];
 	stack<Food> result;
 public:
 	diet();
 	void out();
 	int findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int count);
+	bool isExist0();
 };
 
 diet::diet() {
-	//ifstream in("diet.inp");
-	ifstream in("3.inp");
+	ifstream in("diet.inp");
+	//ifstream in("3.inp");
 
 	in >> numOfFood;
 	in >> atLeast.protein >> atLeast.fat >> atLeast.carbohydrate >> atLeast.vitamin;
@@ -44,7 +45,7 @@ diet::diet() {
 
 	minValue = 20000;
 	sort(value + 1, value + numOfFood + 1, sorting);
-
+	finalV = 0;
 	in.close();
 }
 int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int count) {
@@ -65,21 +66,19 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int c
 	if (mp >= atLeast.protein && mf >= atLeast.fat && ms >= atLeast.carbohydrate && mv >= atLeast.vitamin) {
 		stack<Food> tmp;
 		Food tmpResult[31];
-		int store = 0;
 
 		for (int i = 1; i <= numOfFood; i++) {
 			if (result.empty()) break;
 			tmp.push(result.top());
 			tmpResult[i] = result.top();
 			result.pop();
-			store = i;
 		}
 		while (!tmp.empty()) {
 			result.push(tmp.top());
 			tmp.pop();
 		}
 
-		if (store + 1 <= numOfFood) tmpResult[store + 1] = { 0,0,0,0,0,0 };
+		if (count + 1 <= numOfFood) tmpResult[count + 1] = { 0,0,0,0,0,0 };
 		
 		if (cost == minValue) {
 			int n = 0;
@@ -115,32 +114,51 @@ int diet::findMinCost(int index, int mp, int mf, int ms, int mv, int cost, int c
 		}
 		
 
-		for (int idx = 1; idx <= store; idx++) {
-			if (tmpResult[idx].index == 0) break;
+		for (int idx = 1; idx <= count; idx++) {
 			minimum[idx] = tmpResult[idx];
 		}
-		if (store + 1 <= numOfFood) minimum[store + 1] = { 0,0,0,0,0,0 };
+		if (count + 1 <= numOfFood) minimum[count + 1] = { 0,0,0,0,0,0 };
 
-		for (int i = 1; i <= store; i++) {
+		for (int i = 1; i <= count; i++) {
 			cout << minimum[i].index << " ";
 		}
 		cout << endl;
 
-		sort(minimum, minimum + store + 1, sortingI);
-
+		sort(minimum, minimum + count + 1, sortingI);
+		finalV = count;
 		minValue = cost;
 		result.pop();
 		return cost;
 	}
 
 	for (int i = index + 1; i <= numOfFood; i++) {
-		minValue = min(minValue, findMinCost(i, mp, mf, ms, mv, cost));
+		minValue = min(minValue, findMinCost(i, mp, mf, ms, mv, cost, count));
 	}
 
 	result.pop();
 	return minValue;
 }
-
+bool diet::isExist0() {
+	bool e = false;
+	for (int i = 1; i <= numOfFood; i++) {
+		if (value[i].price == 0) {
+			int save = 0;
+			for (int j = 1; j <= numOfFood; j++) {
+				if (minimum[j].index == 0) break;
+				if (minimum[j].index == value[i].index) {
+					save = 1;
+					break;
+				}
+			}
+			if (save == 0) {
+				minimum[++finalV] = value[i];
+				if (finalV <= 30)	minimum[finalV + 1] = { 0,0,0,0,0,0 };
+				e = true;
+			}
+		}
+	}
+	return e;
+}
 void diet::out() {
 	ofstream out("diet.out");
 
@@ -154,14 +172,11 @@ void diet::out() {
 		findMinCost(i, 0, 0, 0, 0, 0, 0);
 	}
 
-	int save = 0;
-	for (int i = 0; i < numOfFood; i++) {
-		if (minimum[i].index == 0) break;
-		save = i;
+	if (isExist0()) {
+		sort(minimum, minimum + finalV + 1, sortingI);
 	}
 
-	for (int i = 1; i <= numOfFood; i++) {
-		if (minimum[i].index == 0) break;
+	for (int i = 1; i <= finalV; i++) {
 		out << minimum[i].index << " ";
 	}
 	out << endl;
