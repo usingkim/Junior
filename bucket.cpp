@@ -20,6 +20,7 @@ typedef struct Q {
 Data c, start, goal;
 int k; // 물통 개수 3 <=k <= 6
 int minCount = MAX;
+int sum[2] = { 0,0 };
 list<Q> l;
 
 void inp() {
@@ -34,10 +35,12 @@ void inp() {
 
 	for (int i = 0; i < k; i++) {
 		in >> start.b[i];
+		sum[0] += start.b[i];
 	}
 
 	for (int i = 0; i < k; i++) {
 		in >> goal.b[i];
+		sum[1] += start.b[i];
 	}
 
 	in.close();
@@ -82,8 +85,19 @@ bool isValid(Q tmp) {
 }
 
 void bfs() {
+	if (sum[0] != sum[1]) {
+		minCount = 0;
+		return;
+	}
+
 	queue<Q> d;
 	d.push({ start, 0 });
+
+	if (isValid(d.front())) {
+		minCount = 0;
+		return;
+	}
+
 	int call = 0;
 	while (!d.empty()) {
 		call++;
