@@ -20,6 +20,7 @@ typedef struct Q {
 Data c, start, goal;
 int k; // 물통 개수 3 <=k <= 6
 int minCount = MAX;
+int sum[2] = { 0,0 };
 list<Q> l;
 
 void inp() {
@@ -34,10 +35,12 @@ void inp() {
 
 	for (int i = 0; i < k; i++) {
 		in >> start.b[i];
+		sum[0] += start.b[i];
 	}
 
 	for (int i = 0; i < k; i++) {
 		in >> goal.b[i];
+		sum[1] += start.b[i];
 	}
 
 	in.close();
@@ -53,8 +56,8 @@ bool isPossible(Data& tmp, int i, int j) {
 		list<Q>::iterator it;
 		for (it = l.begin(); it != l.end(); it++) {
 			int save = 0;
-			for (int i = 0; i < k; i++) {
-				if ((*it).data.b[i] == tmp.b[i]) save++;
+			for (int s = 0; s < k; s++) {
+				if ((*it).data.b[s] == tmp.b[s]) save++;
 			}
 			if (save == k) return false;
 		}
@@ -65,7 +68,7 @@ bool isPossible(Data& tmp, int i, int j) {
 		tmp.b[i] = 0;
 		return true;
 	}
-	if (c.b[j] - tmp.b[j] < tmp.b[i]) {
+	else {
 		tmp.b[i] -= c.b[j] - tmp.b[j];
 		tmp.b[j] += c.b[j] - tmp.b[j];
 		return true;
@@ -82,12 +85,23 @@ bool isValid(Q tmp) {
 }
 
 void bfs() {
+	if (sum[0] != sum[1]) {
+		minCount = 0;
+		return;
+	}
+
 	queue<Q> d;
 	d.push({ start, 0 });
+
+	if (isValid(d.front())) {
+		minCount = 0;
+		return;
+	}
+
 	int call = 0;
 	while (!d.empty()) {
 		call++;
-		if (call > 100) break;
+		if (call > 1000) break; // 적당한 break 조건이 필요하다. how to?
 		Q tmp = d.front();
 		d.pop();
 
@@ -96,7 +110,7 @@ void bfs() {
 			for (int j = 0; j < k; j++) {
 				if (i == j) continue;
 				Q tmp_ = tmp;
-				if (isPossible(tmp_.data, i, j)) {				
+				if (isPossible(tmp_.data, i, j)) {
 					tmp_.count++;
 					if (isValid(tmp_)) {
 						l.push_back(tmp_);
@@ -113,6 +127,7 @@ void out() {
 	inp();
 	ofstream out("bucket.out");
 	bfs();
+	if (minCount == MAX) minCount = 0;
 	out << minCount << endl;
 	out.close();
 }
@@ -120,4 +135,3 @@ void out() {
 int main() {
 	out();
 }
-
