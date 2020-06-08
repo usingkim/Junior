@@ -10,6 +10,7 @@ class marathon {
 		int start, end, weight;
 	}info;
 
+<<<<<<< HEAD
 	int k, minimum;
 	bool visited[51];
 	list<info> v, r;
@@ -57,12 +58,26 @@ void marathon::routine() {
 	out << min;
 	out.close();
 }
+=======
+int k;
+bool visited[51];
+list<info> v;
+info t;
+
+bool isSame(info &a);
+bool comp(info &a, info &b);
+int getParent(int parent[], int x);
+void unionParent(int parent[], int a, int b);
+bool findParent(int parent[], int a, int b);
+>>>>>>> f11702ff648136d0d2795f24d52cc8e20c61947a
 
 marathon::marathon() {
 	int s, e, w;
 	list<info>::iterator iter;
 
 	ifstream in("marathon.inp");
+	ofstream out("marathon.out");
+
 	in >> k;
 
 	for (int i = 1; i <= k; i++) {
@@ -73,13 +88,20 @@ marathon::marathon() {
 			in >> w;
 			t = { s, e, w };
 			iter = find_if(v.begin(), v.end(), isSame);
+<<<<<<< HEAD
 			if (iter == v.end()) v.push_back(t);
+=======
+			if (iter == v.end()) {
+				v.push_back(t);
+			}
+>>>>>>> f11702ff648136d0d2795f24d52cc8e20c61947a
 		}
 	}
 
 	in.close();
 
 	v.sort(comp);
+<<<<<<< HEAD
 }
 
 bool marathon::isSame(info &a) {
@@ -131,4 +153,48 @@ void marathon::initVisited() {
 	for (int i = 1; i <= k; i++) {
 		visited[i] = 0;
 	}
+=======
+	int parent[51];
+	for (int i = 1; i <= k; i++) {
+		parent[i] = i;
+	}
+
+	int min = MAX;
+	for (iter = v.begin(); iter != v.end(); ++iter) {
+		if (findParent(parent, iter->start, iter->end)) {
+			// cycle이 발생하는 경우
+			
+		}
+		unionParent(parent, iter->start, iter->end);
+	}
+
+	out << min;
+	out.close();
+>>>>>>> f11702ff648136d0d2795f24d52cc8e20c61947a
+}
+
+bool isSame(info &a) {
+	return (t.end == a.start && t.start == a.end);
+}
+
+bool comp(info &a, info &b) {
+	return a.weight < b.weight;
+}
+
+int getParent(int parent[], int x) {
+	if (parent[x] == x) return x;
+	return parent[x] = getParent(parent, parent[x]);
+}
+
+void unionParent(int parent[], int a, int b) {
+	a = getParent(parent, a);
+	b = getParent(parent, b);
+	if (a < b) parent[b] = a;
+	else parent[a] = b;
+}
+
+bool findParent(int parent[], int a, int b) {
+	a = getParent(parent, a);
+	b = getParent(parent, b);
+	return a == b;
 }
