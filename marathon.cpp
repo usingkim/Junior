@@ -2,46 +2,23 @@
 #include <fstream>
 #include <list>
 #include <algorithm>
+#define MAX 10000000
 using namespace std;
 
 typedef struct info {
 	int start, end, weight;
 }info;
 
-int k, sum;
+int k;
 bool visited[51];
-list<info> v; // v의 정보
+list<info> v;
 info t;
 
 bool isSame(info &a);
 bool comp(info &a, info &b);
 int getParent(int parent[], int x);
 void unionParent(int parent[], int a, int b);
-int findParent(int parent[], int a, int b);
-int getPath(int s, int e) {
-	//s 로 시작하는 점을 찾는다.
-	if (s == e) return 0;
-	list<info>::iterator iter;
-	int i;
-	visited[s] = true;
-	for (iter = v.begin(), i = 0; iter != v.end() && i <= sum; ++iter, i++) {
-		if (s == iter->start && visited[iter->end] == false) {
-			int tmp = getPath(iter->end, e);
-			if (tmp != -1) return tmp + iter->weight;
-		}
-		else if (s == iter->end && visited[iter->start] == false) {
-			int tmp = getPath(iter->start, e);
-			if (tmp != -1) return tmp + iter->weight;
-		}
-	}
-	visited[s] = false;
-	return -1;
-}
-void initVisited() {
-	for (int i = 1; i <= k; i++) {
-		visited[i] = 0;
-	}
-}
+bool findParent(int parent[], int a, int b);
 
 int main() {
 	int s, e, w;
@@ -74,20 +51,16 @@ int main() {
 		parent[i] = i;
 	}
 
-	sum = 0;
-	int min = 10000000;
+	int min = MAX;
 	for (iter = v.begin(); iter != v.end(); ++iter) {
 		if (findParent(parent, iter->start, iter->end)) {
-			initVisited();
-			int result = getPath(iter->start, iter->end) + iter->weight;
-			if (result < min) min = result;
+			// cycle이 발생하는 경우
+			
 		}
 		unionParent(parent, iter->start, iter->end);
-		sum++;
 	}
 
 	out << min;
-
 	out.close();
 }
 
@@ -111,9 +84,8 @@ void unionParent(int parent[], int a, int b) {
 	else parent[a] = b;
 }
 
-int findParent(int parent[], int a, int b) {
+bool findParent(int parent[], int a, int b) {
 	a = getParent(parent, a);
 	b = getParent(parent, b);
-	if (a == b) return 1;
-	return 0;
+	return a == b;
 }
