@@ -1,0 +1,163 @@
+import random
+import math
+
+NumEval = 0    # Total number of evaluations
+
+def main():
+    # Create an instance of TSP
+    p = createProblem()    # 'p': (numCities, locations, table)
+    # Call the search algorithm
+    solution, minimum = steepestAscent(p)
+    # Show the problem and algorithm settings
+    describeProblem(p)
+    displaySetting()
+    # Report results
+    displayResult(solution, minimum)
+
+def createProblem():
+    ## Read in a TSP (# of cities, locatioins) from a file.
+    ## Then, create a problem instance and return it.
+    fileName = input("Enter the file name of a TSP: ")
+    infile = open(fileName, 'r')
+    # First line is number of cities
+    numCities = int(infile.readline())
+    locations = []
+    line = infile.readline()  # The rest of the lines are locations
+    while line != '':
+        locations.append(eval(line)) # Make a tuple and append
+        line = infile.readline()
+    infile.close()
+    table = calcDistanceTable(numCities, locations)
+    return numCities, locations, table
+
+
+def calcDistanceTable(numCities, locations): ###
+    ###
+    # 두 점 사이의 거리를 각각 구해라. 단, 행렬은 대칭행렬이다.
+    #우선, 테이블을 numCities X numCites 크기인 2차 리스트로 만들어준뒤 각각 0을 채워넣는다.
+    table = [[0] * numCities for i in range(numCities)]
+    # 대칭행렬이므로 상부삼각행렬만 채우면 하부삼각행렬을 채울수 있기 때문에,
+    # j의 range를 i+1부터로 설정해준다.
+    for i in range(numCities):
+        for j in range(i + 1, numCities):
+            # 점과 점 사이의 거리를 구하는 공식에 대입하여 table[i][j] 값을 구한다.
+            table[i][j] = math.sqrt(math.pow(locations[i][0] - locations[j][0], 2)\
+                 + math.pow(locations[i][1]-locations[j][1], 2))
+            # 앞서 말한것과 같이, 대칭행렬이기 때문에 아래 식을 수행한다.
+            table[j][i] = table[i][j]    
+    ###
+    return table # A symmetric matrix of pairwise distances
+
+
+def steepestAscent(p):
+    current = randomInit(p)   # 'current' is a list of city ids
+    valueC = evaluate(current, p)
+    while True:
+        neighbors = mutants(current, p)
+        (successor, valueS) = bestOf(neighbors, p)
+        if valueS >= valueC:
+            break
+        else:
+            current = successor
+            valueC = valueS
+    return current, valueC
+
+def randomInit(p):   # Return a random initial tour
+    n = p[0]
+    init = list(range(n))
+    random.shuffle(init)
+    return init
+
+
+def evaluate(current, p): ###
+    ## Calculate the tour cost of 'current'
+    ## 'p' is a Problem instance
+    ## 'current' is a list of city ids
+
+    # evaluate 함수가 호출된 횟수를 기록하기 위해서 전역변수를 참조했다.
+    global NumEval
+    NumEval += 1
+
+    # p에는 numCites, locations, distanceTable 3가지가 차례로 들어있기 때문에
+    # 혼란을 방지하고자 변수에 할당해줬다.
+    numCites = p[0]
+    distanceTable = p[2]
+
+    # cost의 합을 구하는 section
+    cost = 0
+    # range를 numCites로 설정하면 current[i+1] 때문에 outofrange 발생
+    for i in range(numCites - 1):
+        # current[i]에서 current[i+1]로 가는 비용을 더해준다.
+        cost += distanceTable[current[i]][current[i+1]]
+    # TSP는 원점으로 되돌아오는 것이기 때문에 마지막 방문점에서 첫번째 지점으로 오는 cost 또한 더해줘야한다.
+    cost += distanceTable[numCites-1][current[0]]
+
+    return cost
+
+
+def mutants(current, p): # Apply inversion
+    n = p[0]
+    neighbors = []
+    count = 0
+    triedPairs = []
+    while count <= n:  # Pick two random loci for inversion
+        i, j = sorted([random.randrange(n) for _ in range(2)])
+        if i < j and [i, j] not in triedPairs:
+            triedPairs.append([i, j])
+            curCopy = inversion(current, i, j)
+            count += 1
+            neighbors.append(curCopy)
+    return neighbors
+
+def inversion(current, i, j):  ## Perform inversion
+    curCopy = current[:]
+    while i < j:
+        curCopy[i], curCopy[j] = curCopy[j], curCopy[i]
+        i += 1
+        j -= 1
+    return curCopy
+
+def bestOf(neighbors, p): 
+    ###
+    best = neighbors[0]
+    bestValue = evaluate(neighbors[0], p)
+
+    for i in range(1, len(neighbors)):
+        newValue = evaluate(neighbors[i], p)
+        if newValue < bestValue:
+            best = neighbors[i]    
+            bestValue =  newValue 
+    ###
+    return best, bestValue
+
+def describeProblem(p):
+    print()
+    n = p[0]
+    print("Number of cities:", n)
+    print("City locations:")
+    locations = p[1]
+    for i in range(n):
+        print("{0:>12}".format(str(locations[i])), end = '')
+        if i % 5 == 4:
+            print()
+
+def displaySetting():
+    print()
+    print("Search algorithm: Steepest-Ascent Hill Climbing")
+
+def displayResult(solution, minimum):
+    print()
+    print("Best order of visits:")
+    tenPerRow(solution)       # Print 10 cities per row
+    print("Minimum tour cost: {0:,}".format(round(minimum)))
+    print()
+    print("Total number of evaluations: {0:,}".format(NumEval))
+
+def tenPerRow(solution):
+    for i in range(len(solution)):
+        print("{0:>5}".format(solution[i]), end='')
+        if i % 10 == 9:
+            print()
+
+main()
+
