@@ -1,0 +1,8 @@
+first, we have to make a file
+second, git add * (file name is also possible)
+git commit -m "additional words 보충설명"
+git push -u origin master
+
+my ID is YooJ-K ! not email
+password
+
